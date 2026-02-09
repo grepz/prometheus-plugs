@@ -2,7 +2,7 @@ defmodule PrometheusPlugs.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/deadtrickster/prometheus-plugs"
-  @version "1.1.5"
+  @version "1.2.0"
 
   def project do
     [
@@ -53,7 +53,7 @@ defmodule PrometheusPlugs.Mixfile do
     [
       {:accept, "~> 0.1"},
       {:plug, "~> 1.0"},
-      {:prometheus_ex, "~> 1.1 or ~> 2.0 or ~> 3.0"},
+      {:prometheus_ex, "~> 1.1 or ~> 2.0 or ~> 3.0 or ~> 4.0 or ~> 5.0"},
       {:prometheus_process_collector, "~> 1.1", optional: true},
 
       {:earmark, ">= 0.0.0", only: :dev},

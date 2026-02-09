@@ -152,7 +152,7 @@ defmodule Prometheus.PlugPipelineInstrumenter do
           )
 
           stop = :erlang.monotonic_time()
-          diff = stop - start
+          diff = convert_time_unit(stop - start, unquote(:"#{duration_unit}"))
 
           Histogram.observe(
             [
@@ -165,6 +165,40 @@ defmodule Prometheus.PlugPipelineInstrumenter do
 
           conn
         end)
+      end
+
+      @spec convert_time_unit(
+        integer(),
+        :microseconds | :milliseconds | :seconds | :minutes | :hours | :days
+      ) :: integer()
+      def convert_time_unit(native_diff, duration_unit) do
+        ## defp is changed to dep due to dialyzer being too strict.
+        ## Since duration_time is a compile time variable, dialyzer thinks(righfully so)
+        ## that any other duration_unit except for choosen on compile level is non-applicable
+        ## thus errors about dead code branches
+        case duration_unit do
+          :microseconds ->
+            :erlang.convert_time_unit(native_diff, :native, :microsecond)
+
+          :milliseconds ->
+            :erlang.convert_time_unit(native_diff, :native, :millisecond)
+
+          :seconds ->
+            :erlang.convert_time_unit(native_diff, :native, :second)
+
+          :minutes ->
+            :erlang.convert_time_unit(native_diff, :native, :second) |> Kernel./(60) |> round()
+
+          :hours ->
+            :erlang.convert_time_unit(native_diff, :native, :second)
+            |> Kernel./(60 * 60)
+            |> round()
+
+          :days ->
+            :erlang.convert_time_unit(native_diff, :native, :second)
+            |> Kernel./(60 * 60 * 24)
+            |> round()
+        end
       end
     end
   end
